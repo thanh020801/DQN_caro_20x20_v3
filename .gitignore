@@ -4,6 +4,7 @@ include/
 lib/
 Scripts/
 /model/
+/model1/
 /data/
 /myvenv/
 /logs/
