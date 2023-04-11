@@ -7,8 +7,8 @@ import random
 from math import inf as infinity
 # import evaluate as eval
 # DEFINE BOARD 
-BOARD = 3
-WIN_STATE = 3
+BOARD = 20
+WIN_STATE = 5
 WIN = False
 
 VALUE_SCORE_ATTACK = {

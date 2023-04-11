@@ -11,22 +11,31 @@ from tensorflow.keras.optimizers import Adam
 
 def _build_model():
     model = Sequential()
-    model.add(Input(shape=(3,3,1)))
+    # model.add(Conv2D(8, kernel_size=(2, 2), padding='same', activation='relu', input_shape=(3, 3, 1)))
+    # model.add(Conv2D(16, kernel_size=(2, 2),padding='same', activation='relu'))
+    model.add(Input(shape=(20,20,1)))
     model.add(Flatten())
-    model.add(Dense(27, activation='relu'))
-    model.add(Dense(27, activation='relu'))
-    model.add(Dense(9, activation='linear'))
+    model.add(Dense(256, activation='relu'))
+    model.add(Dense(512, activation='relu'))
+    model.add(Dense(512, activation='relu'))
+    model.add(Dense(256, activation='relu'))
+    model.add(Dense(512, activation='relu'))
+    model.add(Dense(128, activation='relu'))
+    model.add(Dense(400, activation='linear'))
     model.compile(loss='mse', optimizer=Adam(learning_rate=0.001))
     model.summary()
     return model
+
 model = _build_model()
-model.load_weights('model/DQN_v3.h5')
+model.load_weights('model/DQN_v2_20x20.h5')
 
 # model.load_weights('models/dense_v1_Weights.h5')
 # tim phan tu co vi tri hop le va co xac suat du doan cao nhat
 def probability_positions(board, prediction):
     # emp = caro.empty_cells_around(board,2)
     # if len(emp) <=0:
+    p = np.argmax(prediction, axis=0)
+    print('pred:',p // 20, p % 20)
     emp = caro.empty_cells(board)
     probs = []
     for row, col in emp:
@@ -62,9 +71,9 @@ RED = ( 195, 238, 155)
 A = (44, 45, 46)
 screen.fill(A)
 # Vẽ lưới caro
-block_size = 200  # kích thước mỗi ô vuông
-for x in range(0, 600, block_size):
-    for y in range(0, 600, block_size):
+block_size = 25  # kích thước mỗi ô vuông
+for x in range(0, 500, block_size):
+    for y in range(0, 500, block_size):
         rect = pygame.Rect(x, y, block_size, block_size)
         pygame.draw.rect(screen, RED, rect, 1)
 
@@ -152,7 +161,7 @@ def handle_events(board, player, opponent):
 #     # player = -player
 #     pygame.display.update()
 
-BOARD_STATE =  caro.init_chess(caro.BOARD, 3)
+BOARD_STATE =  caro.init_chess(caro.BOARD, 5)
 
 
 BOT.state = False

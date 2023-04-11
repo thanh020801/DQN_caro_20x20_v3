@@ -1,7 +1,8 @@
 import matplotlib.pyplot as plt
 import numpy as np
+import config 
 
-history = np.loadtxt('logs/history_v1_v1_20x20.txt')
+history = np.loadtxt(config.history_reward)
 # print(history)
 
 plt.figure(1)
@@ -9,20 +10,20 @@ plt.plot(history, label = "training reward")
 print(history)
 # plt.plot(history.history['val_loss'], label = "validation loss")
 plt.title("Reward Plot")
-plt.xlabel("epoch")
+plt.xlabel("episode")
 plt.ylabel("reward")
 plt.legend()
 plt.show()
 
 
 
-so_quan_co = np.loadtxt('logs/so_quan_co_v1_v1_20x20.txt')
+so_quan_co = np.loadtxt(config.history_num_chess)
 print(so_quan_co)
 
 plt.figure(1)
-plt.plot(so_quan_co, label = "training reward")
-plt.title("Reward Plot")
-plt.xlabel("epoch")
-plt.ylabel("reward")
+plt.plot(so_quan_co, label = "training số lượng quân cờ")
+plt.title("Số quân cờ ")
+plt.xlabel("episode")
+plt.ylabel("số quân cờ")
 plt.legend()
 plt.show()
