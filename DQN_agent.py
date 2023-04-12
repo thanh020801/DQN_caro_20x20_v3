@@ -6,6 +6,8 @@ import gym
 from gym import spaces
 import numpy as np
 from evaluate_20x20 import evaluate
+import caro_part1 as caro
+
 import random
 from collections import deque
 import random
@@ -38,8 +40,12 @@ class DQNAgent:
         # model.add(Conv2D(64, kernel_size=(2, 2), padding='same', activation='relu'))
         # model.add(Conv2D(128, kernel_size=(2, 2), padding='same', activation='relu'))
         model.add(Flatten())
-        model.add(Dense(4096, activation='relu'))
+        model.add(Dense(1024, activation='relu'))
         model.add(Dense(512, activation='relu'))
+        model.add(Dense(890, activation='relu'))
+        model.add(Dense(2048, activation='relu'))
+        model.add(Dense(4096, activation='relu'))
+        model.add(Dense(1024, activation='relu'))
         model.add(Dense(4096, activation='relu'))
         model.add(Dense(512, activation='relu'))
         model.add(Dense(self.action_size, activation='linear'))
@@ -51,12 +57,17 @@ class DQNAgent:
     def remember(self, state, action, reward, next_state, done):
         self.memory.append((state, action, reward, next_state, done))
 
-    def act(self, state):
+    def act(self, state, player):
+        # print('player lafff: ', player)
         if np.random.rand() <= self.epsilon:
+            if np.random.rand() <= 0.9999999999999:
+                row_1, col_1, _ = caro.set_move_bot(state, player, -player)
+                print('vi tri tot:', row_1, col_1)
+                return row_1, col_1
             position =  random.randrange(self.action_size)
             return position // self.state_size, position % self.state_size
         state = state.reshape((1, self.state_size, self.state_size, 1))
-        act_pred = self.model.predict(state)
+        act_pred = self.model.predict(state, verbose= 0)
         position_pred = np.argmax(act_pred[0])
         row, col = position_pred // self.state_size, position_pred % self.state_size
         print('DQN dự đoán:',row, col)
@@ -113,13 +124,13 @@ class DQNAgent:
             self.model.fit(state, np.expand_dims(target_f, axis=0), epochs=1, verbose=0)
         if self.epsilon > self.epsilon_min:
             self.epsilon *= self.epsilon_decay
-            self.gamma *= 0.999
+            self.gamma *= config.gamma_decay
             self.step_update += 1
             with open(config.num_epsilon, mode='w') as f:
                     f.write("epsilon : "+ str(self.epsilon) + 
                             "\ngamma: "+ str(self.gamma) +
                             "\nstep update model: "+ str(self.step_update))
-        if self.step_update % 5 == 0:
+        if self.step_update % 3 == 0:
             print('target update model')
             self.update_target_model()
     def update_target_model(self):

@@ -32,7 +32,9 @@ def train(env, agent, num_episodes, batch_size):
     for episode in range(num_episodes):
         # Khởi tạo trạng thái đầu tiên
         state = env.reset()
-        # print(state)
+        print('1cur _ player là: ', env.cur_player)
+        print('1sss player là: ', env.player)
+        
         # input()
         # Khởi tạo biến lưu trữ tổng reward trong episode
         total_reward = []
@@ -41,11 +43,12 @@ def train(env, agent, num_episodes, batch_size):
         done = False
         while not done:
             # Chọn hành động dựa trên trạng thái hiện tại
-            row, col = agent.act(state)
+            row, col = agent.act(state, env.player)
             
             # Thực hiện hành động và nhận lại thông tin về trạng thái mới, reward và done
-            next_state, reward, done, check_selected = env.step(row, col)
-
+            next_state, reward, done, _ = env.step(row, col)
+            env.render()
+            input()
             # Lưu trữ trạng thái hiện tại, hành động, reward và trạng thái tiếp theo vào bộ nhớ
             agent.remember(state, (row, col), reward, next_state, done)
             
@@ -73,9 +76,9 @@ def train(env, agent, num_episodes, batch_size):
 
         # print('len(total_reward)', len(total_reward))
         # print('len memory: ', len(agent.memory))
-        print(total_reward)
-        print('np.mean(total_reward):',np.mean(total_reward))
-        print('len reward: ', len(total_reward))
+        # print(total_reward)
+        # print('np.mean(total_reward):',np.mean(total_reward))
+        # print('len reward: ', len(total_reward))
         with open(config.history_reward, 'a') as f:
             np.savetxt(f, [np.mean(total_reward)], delimiter=',', footer='', header='')
         with open(config.history_num_chess, 'a') as f:

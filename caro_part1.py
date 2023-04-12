@@ -5,10 +5,11 @@ import math
 import numpy as np
 import random
 from math import inf as infinity
+import config
 # import evaluate as eval
 # DEFINE BOARD 
-BOARD = 20
-WIN_STATE = 5
+BOARD = config.board_size
+WIN_STATE = config.win_state
 WIN = False
 
 VALUE_SCORE_ATTACK = {
@@ -403,12 +404,12 @@ def set_move_bot(board, AI, person):
 		beta = infinity
 		cur_board = board
 		
-		best,move = minimax(cur_board, 1, True, alpha, beta, AI, person )
+		best, move = minimax(cur_board, 1, True, alpha, beta, AI, person )
 		# print('Minimax: ', best ,move)
 		return move[0], move[1], best
 # AI
 
-BOARD_STATE =  init_chess(BOARD, 3)
+BOARD_STATE =  init_chess(BOARD, WIN_STATE)
 def game():
 	while True:
 		show_chess_board(BOARD_STATE)

@@ -10,6 +10,7 @@ from evaluate_20x20 import evaluate
 import random
 from collections import deque
 
+import caro_part1 as caro
 import config
 
 def is_empty_cell(board, row, col):
@@ -101,50 +102,73 @@ class CaroEnv(gym.Env):
         self.opponent = -self.opponent
 
     def step(self, row, col):
-        if self.board[row][col] != 0:  # kiểm tra nước đi hợp lệ
-            print('----------------- vị trí ({}, {}) ---- quân ----- ({}) trùng----------------'.format(row, col, self.cur_player))
-            self.cur_player = self.update_player()
-            return self._get_obs(), -1000000, False, {'selected': True}
-        self.board[row][col] = self.cur_player  # cập nhật bàn cờ
-        winner = self.check_winner(self.board, self.player, self.opponent)  # kiểm tra xem trò chơi đã kết thúc chưa và xác định người chiến thắng
-        
-        # Chưa ai win
-        if winner == 0:
-            reward = evaluate(self.board, self.player, self.opponent)
-            done = False
-            self.cur_player = self.update_player()
-        # Player win
-        elif winner == 1: 
-            reward = evaluate(self.board, self.player, self.opponent) * 2.0
-            print('thắng: ', reward)
-            print('player {} win với điểm là {}'.format(self.player, reward))
-            self.update_player_new_game()
-            self.player_win +=1
+        reward = 0
+        done = False
+        # lượt của đối thủ
+        print('cur _ player là: ', self.cur_player)
+        print('sss player là: ', self.player)
+        input('1')
+        if self.cur_player == self.opponent:
+            # tìm ô trống và đánh random
+            row_1, col_1, _ = caro.set_move_bot(self._get_obs(), self.cur_player, -self.cur_player)
+            # print('row, col', row_1, col_1)
+            # able_cells = empty_cells(self._get_obs())
+            # row_1, col_1 = random.sample(able_cells, 1)[0]
+            self.board[row_1][col_1] = self.cur_player
             
-            done = True
-        # Opponent win
-        elif winner == 2: 
-            reward = evaluate(self.board, self.player, self.opponent) * 2.0
-            print('thua: ', reward)
-            print('player {} loss với điểm là {}'.format(self.player, reward))
-            self.update_player_new_game()
-            self.player_loss +=1
-            
-            done = True
-        # Hòa
-        elif winner == 3: 
-            reward = reward = evaluate(self.board, self.player, self.opponent) * 1.3
-            print('hòa: ', reward)
-            self.update_player_new_game()
-            self.player_draw += 1
-            done = True
+            # nếu win hay hòa thì return về bàn cờ và điểm số, ngược lại nếu thì cập nhật cur_player 
+            winner = self.check_winner(self._get_obs(), self.player, self.opponent)
+            if winner == 2 or winner == 3:
+                reward1 = abs(evaluate(self._get_obs(), self.player, self.opponent)) * -2.0
+                # print('thua: ', reward1)
+                print('player {} thua với điểm là {}'.format(self.player, reward1))
+                self.player_loss +=1
+                return self._get_obs(), reward1, True, {}
+            input('2')
+            self.cur_player = self.update_player()
 
-        info = {'selected': False}
-        with open(config.win_loss, mode='w') as f:
-                    f.write("player win : "+ str(self.player_win) + 
-                            "\nplayer loss: "+ str(self.player_loss) +
-                            "\ndraw: "+ str(self.player_draw))
-        return self._get_obs(), reward, done, info
+        # lượt của người chơi
+        if self.cur_player == self.player:
+            # kiểm tra quân cờ hợp lệ nếu ko hợp lệ thì return
+            input('3')
+            if not is_empty_cell(self._get_obs(), row, col):
+                print('----------------- vị trí ({}, {}) ---- quân ----- ({}) trùng----------------'.format(row, col, self.cur_player))
+                reward = evaluate(self.board, self.player, self.opponent) - 1000000
+                self.cur_player = self.update_player()
+                return self._get_obs(), reward, False, {'selected': True}
+            input('33')
+            # cập nhật quân cờ. kiểm tra thắng thua hòa và tính điểm cho trạng thái
+            self.board[row][col] = self.cur_player
+            winner = self.check_winner(self._get_obs(), self.player, self.opponent)
+            if winner == 0:
+                reward = evaluate(self.board, self.player, self.opponent)
+                done = False
+                self.cur_player = self.update_player()
+            elif winner == 1:
+                reward = evaluate(self.board, self.player, self.opponent) * 2.0
+                # print('thắng: ', reward)
+                print('player {} win với điểm là {}'.format(self.player, reward))
+                self.player_win +=1
+                done = True
+
+            elif winner == 3: 
+                reward = evaluate(self.board, self.player, self.opponent) * 1.3
+                print('hòa: ', reward)
+                self.player_draw += 1
+                done = True
+
+        
+            with open(config.win_loss, mode='w') as f:
+                f.write("player win : "+ str(self.player_win) + 
+                        "\nplayer loss: "+ str(self.player_loss) +
+                        "\ndraw: "+ str(self.player_draw))
+            
+            return self._get_obs(), reward, done, {}
+        input('4')
+        print('chuuuuuuuuuuu')
+
+
+
     
 
     def best_action(self):
@@ -163,6 +187,7 @@ class CaroEnv(gym.Env):
     # Tạo lại ván cờ mới
     def reset(self):
         self.board = np.zeros((self.board_size, self.board_size))  # khởi tạo lại bàn cờ
+        self.update_player_new_game()
         self.cur_player = self.player  # đặt người chơi
         return np.copy(self.board)
 
