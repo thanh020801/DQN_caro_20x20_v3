@@ -1,0 +1,9 @@
+epsilon : 0.9587281759142756
+gamma: 0.95
+step update model: 50
+
+DQN_win: 1
+
+Minimax_win: 5
+
+Draw: 0

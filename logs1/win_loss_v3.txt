@@ -1,0 +1,3 @@
+player win : 0
+player loss: 1
+draw: 0

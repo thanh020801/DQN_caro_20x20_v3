@@ -1,0 +1,8 @@
+epsilon = 0.08157186144027828
+gamma = 0.9036656939580016
+
+DQN_win: 150
+
+Minimax_win: 307
+
+Draw: 43

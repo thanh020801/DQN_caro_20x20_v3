@@ -32,8 +32,8 @@ def train(env, agent, num_episodes, batch_size):
     for episode in range(num_episodes):
         # Khởi tạo trạng thái đầu tiên
         state = env.reset()
-        print('1cur _ player là: ', env.cur_player)
-        print('1sss player là: ', env.player)
+        # print('1cur _ player là: ', env.cur_player)
+        # print('1sss player là: ', env.player)
         
         # input()
         # Khởi tạo biến lưu trữ tổng reward trong episode
@@ -43,12 +43,19 @@ def train(env, agent, num_episodes, batch_size):
         done = False
         while not done:
             # Chọn hành động dựa trên trạng thái hiện tại
-            row, col = agent.act(state, env.player)
             
+            # elif env.cur_player == env.opponent:
+            if env.cur_player == env.opponent:
+                next_state, reward, done, _ = env.step_minimax()
+                state = next_state
+            if env.cur_player == env.player:
+                # print('env player', env.player)
+                row, col = agent.act(state, env.player)
+                next_state, reward, done, _ = env.step(row, col)
             # Thực hiện hành động và nhận lại thông tin về trạng thái mới, reward và done
-            next_state, reward, done, _ = env.step(row, col)
-            env.render()
-            input()
+            
+            # env.render()
+            # input()
             # Lưu trữ trạng thái hiện tại, hành động, reward và trạng thái tiếp theo vào bộ nhớ
             agent.remember(state, (row, col), reward, next_state, done)
             
@@ -61,10 +68,10 @@ def train(env, agent, num_episodes, batch_size):
             total_reward.append(reward)
 
             # Huấn luyện mô hình nếu số lượng bộ nhớ đủ lớn
-            if len(agent.memory) > batch_size + batch_size // 2:
+            if len(agent.memory) >= batch_size:
                 agent.replay(batch_size)
                 agent.save(config.model_name)
-                agent.memory.clear()
+                # agent.memory.clear()
 
                 
         # Lưu trữ kết quả reward của episode vào list

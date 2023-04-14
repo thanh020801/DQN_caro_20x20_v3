@@ -5,8 +5,9 @@ import random
 from math import inf as infinity
 # import evaluate as eval
 # DEFINE BOARD 
-BOARD = 20
-WIN_STATE = 5
+import config
+BOARD = config.board_size
+WIN_STATE = config.win_state
 WIN = False
 
 VALUE_SCORE_ATTACK_OPPONENT = {

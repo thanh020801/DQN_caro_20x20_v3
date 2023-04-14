@@ -1,3 +1,3 @@
-epsilon : 0.7038213305632703
-gamma: 0.838109230801361
-step update model: 50
+epsilon : 0.6988945812493275
+gamma: 0.8339186846473542
+step update model: 51

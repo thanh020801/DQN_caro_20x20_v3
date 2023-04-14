@@ -13,8 +13,9 @@ board =  env.reset()
 
 try:
     agent.load(config.model_name)
+    print('###################### Có model #################')
 except:
-    print('chưa có file')
+    print('$$$$$$$$$$$$$$$$$$$$$ Chưa có model $$$$$$$$$$$$$$$$$$$$$')
 
 
 def probability_positions(board, prediction):
@@ -33,7 +34,7 @@ pygame.init()
 
 
 # Thiết lập màn hình
-screen = pygame.display.set_mode((500, 550))
+screen = pygame.display.set_mode((600, 600))
 pygame.display.set_caption("Game caro 20x20")
 
 
@@ -47,9 +48,9 @@ RED = ( 195, 238, 155)
 A = (44, 45, 46)
 screen.fill(A)
 # Vẽ lưới caro
-block_size = 25  # kích thước mỗi ô vuông
-for x in range(0, 500, block_size):
-    for y in range(0, 500, block_size):
+block_size = 200  # kích thước mỗi ô vuông
+for x in range(0, 600, block_size):
+    for y in range(0, 600, block_size):
         rect = pygame.Rect(x, y, block_size, block_size)
         pygame.draw.rect(screen, RED, rect, 1)
 
@@ -87,11 +88,12 @@ def handle_events(player):
         elif player == dqn:
             cur_board = np.reshape(env._get_obs(), [1,env.board_size,env.board_size,1])
             pred = agent.model_target.predict(cur_board, verbose = 0)[0]
-            # pred = np.argmax(pred,axis = 1)
-            # row, col = divmod(pred,20)
-            # print("row: ", row, ",col: ", col)
-            row, col = probability_positions(env._get_obs(), pred)
-            env.board[row][col] = player
+            pred = np.argmax(pred,axis = 0)
+            row, col = divmod(pred,env.board_size)
+            print("row: ", row, ",col: ", col)
+            # row, col = probability_positions(env._get_obs(), pred)
+            if env.board[row][col] == 0:
+                env.board[row][col] = player
             print(row, col)
             draw_board(env._get_obs())
             env.cur_player = env.update_player()
